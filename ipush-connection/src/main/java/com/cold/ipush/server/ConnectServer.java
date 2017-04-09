@@ -1,5 +1,9 @@
-package com.cold.ipush;
+package com.cold.ipush.server;
 
+import com.cold.ipush.NettySharedHolder;
+import com.cold.ipush.encoder.PacketDecoder;
+import com.cold.ipush.encoder.PacketEncoder;
+import com.cold.ipush.handler.ConnectionHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -8,11 +12,18 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by faker on 2017/4/8.
  */
 public class ConnectServer {
+
+    private static final Logger log = LoggerFactory.getLogger(ConnectServer.class);
+    private final AtomicBoolean startFlag = new AtomicBoolean(false);
 
     private int port;
     private EventLoopGroup bossGroup;
@@ -23,6 +34,9 @@ public class ConnectServer {
     }
 
     public void stop() {
+        log.info("netty server stop now");
+        this.startFlag.set(false);
+
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();
         }
@@ -33,6 +47,9 @@ public class ConnectServer {
 
     public void start() {
 
+        if (!startFlag.compareAndSet(false, true)) {
+            return;
+        }
         /*
         NioEventLoopGroup 是用来处理channel 的 io操作的多线程循环器，类似于NIO的 selector,
         一般会有两个group
@@ -74,14 +91,18 @@ public class ConnectServer {
          */
         b.childOption(ChannelOption.SO_KEEPALIVE, true);
 
+        b.option(ChannelOption.ALLOCATOR, NettySharedHolder.byteBufAllocator);
+        b.childOption(ChannelOption.ALLOCATOR, NettySharedHolder.byteBufAllocator);
+
         try {
             //绑定端口并启动去接收进来的连接
             ChannelFuture future = b.bind(port).sync();
+
             //同步等待socket关闭
             future.channel().closeFuture().sync();
+            log.info("server start ok on:" + port);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
+            log.error("server start exception" + e.getMessage(), e);
             stop();
         }
     }

@@ -1,5 +1,8 @@
-package com.cold.ipush;
+package com.cold.ipush.handler;
 
+import com.cold.ipush.NettyConnection;
+import com.cold.ipush.MessageReceiver;
+import com.cold.ipush.Request;
 import com.cold.ipush.protocol.Packet;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -10,7 +13,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class ConnectionHandler extends ChannelInboundHandlerAdapter {
 
     private MessageReceiver receiver = new MessageReceiver();
-    private ConnectionImpl connection = new ConnectionImpl();
+    private NettyConnection connection = new NettyConnection();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

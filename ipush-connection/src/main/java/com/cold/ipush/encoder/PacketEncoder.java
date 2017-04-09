@@ -1,5 +1,6 @@
-package com.cold.ipush;
+package com.cold.ipush.encoder;
 
+import com.cold.ipush.Constants;
 import com.cold.ipush.protocol.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
