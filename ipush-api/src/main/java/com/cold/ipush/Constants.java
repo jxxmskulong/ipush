@@ -9,7 +9,7 @@ public class Constants {
     public static final int HEADER_LEN = 13;
     public static final byte MAGIC_NUM1 = (byte) 33;
     public static final byte MAGIC_NUM2 = (byte) 99;
-
+    public static final long TIME_DELAY = 58L;
     /**
      * netty boss 线程
      */

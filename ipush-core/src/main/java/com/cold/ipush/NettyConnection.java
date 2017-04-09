@@ -24,6 +24,11 @@ public class NettyConnection implements Connection{
     }
 
     @Override
+    public String remoteIp() {
+        return null;
+    }
+
+    @Override
     public String getId() {
         return channel.toString();
     }
@@ -58,13 +63,23 @@ public class NettyConnection implements Connection{
     }
 
     @Override
-    public void refreshLastReadTime(long lastReadTime) {
-
+    public int getHbTimes() {
+        return 0;
     }
 
     @Override
     public void close() {
 
+    }
+
+    @Override
+    public boolean isConnected() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnable() {
+        return false;
     }
 
     public ConnectionInfo getInfo() {

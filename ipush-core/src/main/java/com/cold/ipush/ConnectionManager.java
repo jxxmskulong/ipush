@@ -4,55 +4,54 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import io.netty.channel.Channel;
+import io.netty.util.internal.chmv8.ConcurrentHashMapV8;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by faker on 2017/4/8.
  */
 public class ConnectionManager {
-    private static final ConnectionManager INSTANCE = new ConnectionManager();
-    private final Cache<String,NettyConnection> cacherClients = CacheBuilder.newBuilder()
-            .maximumSize(2 << 17)
-            .expireAfterAccess(27, TimeUnit.MINUTES)
-            .removalListener(new RemovalListener<String, NettyConnection>() {
-                public void onRemoval(RemovalNotification<String,NettyConnection> notification) {
-                    if(notification.getValue().isClosed()){
-//		    			  notification.getValue().close("[Remoting] removed from cache");
-                    }
-                };
-            }).build();
+    public static final ConnectionManager INSTANCE = new ConnectionManager();
+
+    //可能会有20w的链接数
+    private final ConcurrentMap<String, Connection> connections = new ConcurrentHashMapV8<>();
 
     public Connection get(final String channelId) throws ExecutionException {
-
-        NettyConnection client = cacherClients.get(channelId, new Callable<NettyConnection>() {
-            @Override
-            public NettyConnection call() throws Exception {
-                NettyConnection client = getFromRedis(channelId);
-                return client;
-            }
-        });
-        if (client == null || !client.isClosed()) {
-            cacherClients.invalidate(channelId);
-            return null;
-        }
-        return client;
-
+        return connections.get(channelId);
     }
 
-    public void add(NettyConnection connection) {
-        cacherClients.put(connection.getId(), connection);
+    public Connection get(final Channel channel){
+        return connections.get(channel.toString());
     }
 
-    public void remove(String channelId) {
-        cacherClients.invalidate(channelId);
+    public void add(Connection connection) {
+        connections.putIfAbsent(connection.getId(), connection);
     }
 
-    private NettyConnection getFromRedis(String channelId){
-        return null;
+    public void add(Channel channel){
+        Connection connection = new NettyConnection();
+        connection.init(channel);
+        connections.putIfAbsent(connection.getId(), connection);
+    }
+
+    public void remove(Connection connection) {
+        connections.remove(connection.getId());
+    }
+
+    public void remove(Channel channel){
+        connections.remove(channel.toString());
+    }
+
+    public List<String> getConnectionIds(){
+        return new ArrayList<>(connections.keySet());
+    }
+
+    public List<Connection> getConnections(){
+        return new ArrayList<>(connections.values());
     }
 }
