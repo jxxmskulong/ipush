@@ -1,5 +1,7 @@
 package com.cold.ipush;
 
+import com.cold.ipush.protocol.Packet;
+
 /**
  * Created by faker on 2017/4/8.
  */

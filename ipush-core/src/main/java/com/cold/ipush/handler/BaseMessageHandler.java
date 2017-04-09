@@ -1,7 +1,7 @@
 package com.cold.ipush.handler;
 
 import com.cold.ipush.MessageHandler;
-import com.cold.ipush.Packet;
+import com.cold.ipush.protocol.Packet;
 import com.cold.ipush.Request;
 
 /**

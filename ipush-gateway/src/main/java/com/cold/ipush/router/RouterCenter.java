@@ -1,7 +1,6 @@
 package com.cold.ipush.router;
 
 import com.cold.ipush.Connection;
-import com.cold.ipush.RouterInfo;
 
 /**
  * Created by faker on 2017/4/8.

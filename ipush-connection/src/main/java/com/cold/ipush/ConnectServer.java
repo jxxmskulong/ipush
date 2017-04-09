@@ -4,6 +4,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -11,12 +12,26 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 /**
  * Created by faker on 2017/4/8.
  */
-public class ConnectServer implements Runnable{
+public class ConnectServer {
 
     private int port;
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
 
-    @Override
-    public void run() {
+    public ConnectServer(int port) {
+        this.port = port;
+    }
+
+    public void stop() {
+        if (workerGroup != null) {
+            workerGroup.shutdownGracefully();
+        }
+        if (bossGroup != null) {
+            bossGroup.shutdownGracefully();
+        }
+    }
+
+    public void start() {
 
         /*
         NioEventLoopGroup 是用来处理channel 的 io操作的多线程循环器，类似于NIO的 selector,
@@ -25,12 +40,12 @@ public class ConnectServer implements Runnable{
         worker:用来处理进来的连接
         当boss接收了连接，就会把连接注册到worker上
          */
-        NioEventLoopGroup boss = new NioEventLoopGroup();
-        NioEventLoopGroup worker = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
 
         // 用于启动NIO服务的辅助启动类，可以直接使用channel
         ServerBootstrap b = new ServerBootstrap();
-        b.group(boss, worker);
+        b.group(bossGroup, workerGroup);
 
         //NioServerSocketChannel 是基于NIO selector为基础实现的，用来接收新的连接
         //此方法主要用来声明创建channel的类别
@@ -44,8 +59,8 @@ public class ConnectServer implements Runnable{
         b.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new PacketDecode());
-                ch.pipeline().addLast(new PacketEncode());
+                ch.pipeline().addLast(new PacketDecoder());
+                ch.pipeline().addLast(new PacketEncoder());
                 ch.pipeline().addLast(new ConnectionHandler());
             }
         });
@@ -67,8 +82,7 @@ public class ConnectServer implements Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            worker.shutdownGracefully();
-            boss.shutdownGracefully();
+            stop();
         }
     }
 }

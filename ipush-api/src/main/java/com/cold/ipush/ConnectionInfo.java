@@ -5,16 +5,14 @@ package com.cold.ipush;
  */
 public class ConnectionInfo {
 
-    public final String clientIp;
-    public final int clientPort;
-    public final String clientVersion;
+    public final String os;
+    public final String clientVer;
     public final String deviceId;
     public final String desKey;
 
-    public ConnectionInfo(String clientIp, int clientPort, String clientVersion, String deviceId, String desKey) {
-        this.clientIp = clientIp;
-        this.clientPort = clientPort;
-        this.clientVersion = clientVersion;
+    public ConnectionInfo(String os, String clientVer, String deviceId, String desKey) {
+        this.os = os;
+        this.clientVer = clientVer;
         this.deviceId = deviceId;
         this.desKey = desKey;
     }

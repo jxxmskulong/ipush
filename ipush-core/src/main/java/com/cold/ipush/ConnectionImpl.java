@@ -1,5 +1,6 @@
 package com.cold.ipush;
 
+import com.cold.ipush.protocol.Packet;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 
@@ -11,6 +12,7 @@ public class ConnectionImpl implements Connection{
     private ConnectionInfo info;
     private Channel channel;
     private int status = 0;
+    private long lastHeartbeatTime = 0;
 
     public void init(Channel channel) {
         this.channel = channel;
@@ -24,6 +26,16 @@ public class ConnectionImpl implements Connection{
     @Override
     public void send(Packet packet) {
 
+    }
+
+    @Override
+    public boolean isClosed() {
+        return false;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return false;
     }
 
 

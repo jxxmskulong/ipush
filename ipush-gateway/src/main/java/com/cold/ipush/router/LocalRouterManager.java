@@ -1,8 +1,5 @@
 package com.cold.ipush.router;
 
-import com.cold.ipush.Router;
-import com.cold.ipush.RouterManager;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

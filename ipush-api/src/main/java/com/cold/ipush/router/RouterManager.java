@@ -1,4 +1,4 @@
-package com.cold.ipush;
+package com.cold.ipush.router;
 
 /**
  * Created by faker on 2017/4/8.

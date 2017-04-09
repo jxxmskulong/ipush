@@ -1,8 +1,5 @@
 package com.cold.ipush.router;
 
-import com.cold.ipush.Router;
-import com.cold.ipush.RouterManager;
-
 /**
  * Created by faker on 2017/4/8.
  */

@@ -1,6 +1,6 @@
 package com.cold.ipush.handler;
 
-import com.cold.ipush.Packet;
+import com.cold.ipush.protocol.Packet;
 import com.cold.ipush.Request;
 import com.cold.ipush.router.RouterCenter;
 import io.netty.util.CharsetUtil;

@@ -1,4 +1,4 @@
-package com.cold.ipush;
+package com.cold.ipush.protocol;
 
 /**
  * Created by faker on 2017/4/8.
@@ -8,7 +8,9 @@ public class Packet {
     public int version;
     public byte flags;
     public int msgId;
-    public int msgType;
     public byte[] body;
 
+    public int getBodyLength() {
+        return body == null ? 0 : body.length;
+    }
 }
